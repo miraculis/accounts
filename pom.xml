@@ -33,11 +33,11 @@
             <artifactId>ignite-spring</artifactId>
             <version>1.9.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/ru.yandex.clickhouse/clickhouse-jdbc -->
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
-            <version>1.4.191</version>
+            <groupId>ru.yandex.clickhouse</groupId>
+            <artifactId>clickhouse-jdbc</artifactId>
+            <version>0.1.20</version>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
@@ -47,12 +47,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.ignite/ignite-indexing -->
-        <dependency>
-            <groupId>org.apache.ignite</groupId>
-            <artifactId>ignite-indexing</artifactId>
-            <version>1.9.0</version>
         </dependency>
     </dependencies>
 

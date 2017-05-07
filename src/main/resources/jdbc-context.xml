@@ -10,11 +10,8 @@
 
     <context:property-placeholder location="classpath:jdbc.properties"/>
 
-    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="${jdbc.driver}"/>
-        <property name="url" value="${jdbc.url}"/>
-        <property name="username" value="${jdbc.username}"/>
-        <property name="password" value="${jdbc.password}"/>
+    <bean id="dataSource" class="ru.yandex.clickhouse.ClickHouseDataSource">
+        <constructor-arg index="0" value="jdbc:clickhouse://${jdbc.host}:${jdbc.port}/${jdbc.db}"/>
     </bean>
     <bean id="jdbcTemplate"
           class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
