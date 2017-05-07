@@ -1,0 +1,4 @@
+1. Install node.js, jdk1.8, maven
+2. clone accounts and accounts-gui
+3. cd accounts-gui, npm install, ng build -prod
+4.

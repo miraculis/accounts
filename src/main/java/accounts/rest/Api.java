@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 
 /**
@@ -19,18 +20,24 @@ public class Api {
     private Bank bank;
 
     @RequestMapping(value = "/api/accounts/{id}", method = RequestMethod.GET, produces = "application/json")
-    public Account findAccount(@PathVariable int id) {
-        log.info("find account " + id);
+    public Account findAccount(@PathVariable int id, HttpServletResponse response) {
+        setHeaders(response);
         return bank.find(id);
     }
 
+    private void setHeaders(HttpServletResponse response) {
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+    }
+
     @RequestMapping(value = "/api/accounts/{id}/transfers", method = RequestMethod.GET, produces = "application/json")
-    public TransfersResponse listTransfers(@PathVariable int id) {
+    public TransfersResponse listTransfers(@PathVariable int id, HttpServletResponse  response) {
+        setHeaders(response);
         return new TransfersResponse(bank.listTransfers(id));
     }
 
     @RequestMapping(value = "/api/transfer", method = RequestMethod.POST, consumes = "application/json")
-    public int transfer(@RequestBody Transfer transfer) {
+    public int transfer(@RequestBody Transfer transfer, HttpServletResponse  response) {
+        setHeaders(response);
         return bank.transfer(transfer);
     }
 }
