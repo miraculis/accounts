@@ -19,19 +19,19 @@ import java.util.Map;
 /**
  * Created by miraculis on 06.05.2017.
  */
-public class TransfersStore extends CacheStoreAdapter<Integer, Transfer> implements LifecycleAware {
+public class TransfersStore extends CacheStoreAdapter<Long, Transfer> implements LifecycleAware {
     private NamedParameterJdbcTemplate jdbc;
 
     @Override
-    public Transfer load(Integer key) throws CacheLoaderException {
+    public Transfer load(Long key) throws CacheLoaderException {
         Map<String, Object> inputParam = new HashMap<>();
         inputParam.put("id", key);
         return jdbc.queryForObject("SELECT * FROM TRANSFERS WHERE id=:id", inputParam,
-                (rs, i) -> new Transfer(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getLong(5)));
+                (rs, i) -> new Transfer(rs.getLong(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getLong(5)));
     }
 
     @Override
-    public void write(Cache.Entry<? extends Integer, ? extends Transfer> entry) throws CacheWriterException {
+    public void write(Cache.Entry<? extends Long, ? extends Transfer> entry) throws CacheWriterException {
         Transfer account = entry.getValue();
         Map<String, Object> parameterMap = new HashMap<>();
         parameterMap.put("ID", account.getId());
@@ -57,10 +57,10 @@ public class TransfersStore extends CacheStoreAdapter<Integer, Transfer> impleme
     }
 
     @Override
-    public void loadCache(IgniteBiInClosure<Integer, Transfer> clo, Object... args) {
-        List<Map> load = jdbc.queryForList("SELECT * FROM TRANSFERS", new HashMap());
+    public void loadCache(IgniteBiInClosure<Long, Transfer> clo, Object... args) {
+        List<Map<String,Object>> load = jdbc.queryForList("SELECT * FROM TRANSFERS", new HashMap());
         load.forEach((map)-> {
-            int id = (Integer)map.get("ID");
+            long id = (Long)map.get("ID");
             clo.apply(id, new Transfer(id, (Integer)map.get("FROMID"),
                     (Integer)map.get("TOID"), (Integer)map.get("AMOUNT"), (Long)map.get("TS")));
         });

@@ -12,7 +12,7 @@ import org.apache.ignite.cache.query.annotations.QuerySqlField;
 @Setter
 @AllArgsConstructor
 public class Transfer {
-    private final int id;
+    private final long id;
     private final int from;
     private final int to;
     private final int volume;
