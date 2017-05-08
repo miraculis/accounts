@@ -29,7 +29,7 @@ public class Bank {
             Account a1 = accounts.get(t0.getFrom()), a2 = accounts.get(t0.getTo());
 
             if ((t0.getVolume()>0 ? a1 : a2).check(t0)) {
-                IgniteAtomicSequence seq = Holder.ignite.atomicSequence("transfers-seq", 0, true);
+                IgniteAtomicSequence seq = Holder.sequence;
 
                 Transfer t = new Transfer(seq.getAndIncrement(), t0.getFrom(), t0.getTo(),
                         t0.getVolume(), System.currentTimeMillis());
@@ -70,9 +70,21 @@ public class Bank {
 
     private static class Holder {
         static Ignite ignite = init();
+        static IgniteAtomicSequence sequence;
+
         private static Ignite init() {
             Ignite ignite = Ignition.start("ignite/example-hello-server.xml");
-            ignite.cache("transfers").loadCache((k, v)->true);
+            IgniteCache<Object, Object> transfers = ignite.cache("transfers");
+            transfers.loadCache((k, v) -> true);
+            long max = Long.MIN_VALUE;
+            try (QueryCursor cursor = transfers.query(new ScanQuery())) {
+                for (Object z: cursor) {
+                    Transfer x = (Transfer) z;
+                    if (x.getId() > max)
+                        max = x.getId();
+                }
+            }
+            sequence = Holder.ignite.atomicSequence("transfers-seq", max+1, true);
             return ignite;
         }
     }
