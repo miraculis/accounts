@@ -1,8 +1,10 @@
 package accounts.dao;
 
 import accounts.Account;
+import accounts.Transfer;
 import org.apache.ignite.IgniteException;
 import org.apache.ignite.cache.store.CacheStoreAdapter;
+import org.apache.ignite.lang.IgniteBiInClosure;
 import org.apache.ignite.lifecycle.LifecycleAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -12,7 +14,11 @@ import javax.cache.Cache;
 import javax.cache.integration.CacheLoaderException;
 import javax.cache.integration.CacheWriterException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Created by miraculis on 06.05.2017.
@@ -34,7 +40,7 @@ public class AccountsStore extends CacheStoreAdapter<Integer, Account> implement
         Map<String, Object> parameterMap = new HashMap<>();
         parameterMap.put("ID", account.getId());
         parameterMap.put("AMOUNT", account.getAmount());
-        jdbc.update("INSERT INTO ACCOUNTS(ID,AMOUNT) VALUES (:ID,:AMOUNT);", parameterMap);
+        jdbc.update("UPDATE ACCOUNTS SET AMOUNT = :AMOUNT WHERE ID = :ID", parameterMap);
     }
 
     @Override
@@ -50,4 +56,18 @@ public class AccountsStore extends CacheStoreAdapter<Integer, Account> implement
     @Override
     public void stop() throws IgniteException {
     }
+
+    @Override
+    public void loadCache(IgniteBiInClosure<Integer, Account> clo, Object... args) {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        Future f = executorService.submit(() -> {
+            List<Map<String, Object>> load = jdbc.queryForList("SELECT * FROM ACCOUNTS", new HashMap());
+            load.forEach((map) -> {
+                int id = (Integer) map.get("ID");
+                clo.apply(id, new Account(id, (Integer) map.get("AMOUNT")));
+            });
+            executorService.shutdown();
+        });
+    }
+
 }

@@ -15,6 +15,9 @@ import javax.cache.integration.CacheWriterException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Created by miraculis on 06.05.2017.
@@ -58,12 +61,16 @@ public class TransfersStore extends CacheStoreAdapter<Long, Transfer> implements
 
     @Override
     public void loadCache(IgniteBiInClosure<Long, Transfer> clo, Object... args) {
-        List<Map<String,Object>> load = jdbc.queryForList("SELECT * FROM TRANSFERS", new HashMap());
-        load.forEach((map)-> {
-            long id = (Long)map.get("ID");
-            clo.apply(id, new Transfer(id, (Integer)map.get("FROMID"),
-                    (Integer)map.get("TOID"), (Integer)map.get("AMOUNT"), (Long)map.get("TS")));
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        Future f = executorService.submit(() -> {
+            List<Map<String, Object>> load = jdbc.queryForList("SELECT * FROM TRANSFERS", new HashMap());
+            load.forEach((map) -> {
+                long id = (Long) map.get("ID");
+                clo.apply(id, new Transfer(id, (Integer) map.get("FROMID"),
+                        (Integer) map.get("TOID"), (Integer) map.get("AMOUNT"), (Long) map.get("TS")));
+            });
+            executorService.shutdown();
         });
     }
-}
 
+}

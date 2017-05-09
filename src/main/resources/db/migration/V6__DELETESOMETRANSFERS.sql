@@ -1,0 +1,1 @@
+delete from transfers where id > 500000;

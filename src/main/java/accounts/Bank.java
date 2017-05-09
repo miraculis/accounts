@@ -71,20 +71,22 @@ public class Bank {
     private static class Holder {
         static Ignite ignite = init();
         static IgniteAtomicSequence sequence;
-
-        private static Ignite init() {
-            Ignite ignite = Ignition.start("ignite/example-hello-server.xml");
+        static {
             IgniteCache<Object, Object> transfers = ignite.cache("transfers");
             transfers.loadCache((k, v) -> true);
             long max = Long.MIN_VALUE;
             try (QueryCursor cursor = transfers.query(new ScanQuery())) {
                 for (Object z: cursor) {
-                    Transfer x = (Transfer) z;
+                    Transfer x = (Transfer) ((Cache.Entry)z).getValue();
                     if (x.getId() > max)
                         max = x.getId();
                 }
             }
-            sequence = Holder.ignite.atomicSequence("transfers-seq", max+1, true);
+            sequence = ignite.atomicSequence("transfers-seq", max+1, true);
+        }
+
+        private static Ignite init() {
+            Ignite ignite = Ignition.start("ignite/example-hello-server.xml");
             return ignite;
         }
     }
