@@ -45,9 +45,6 @@ public class TransfersStore extends CacheStoreAdapter<Long, Transfer> implements
         jdbc.update("INSERT INTO TRANSFERS(ID,FROMID,TOID,AMOUNT,TS) VALUES (:ID,:FROM,:TO,:AMOUNT,:TS);", parameterMap);
     }
 
-    @Override
-    public void delete(Object key) throws CacheWriterException {
-    }
 
     @Override
     public void start() throws IgniteException {
@@ -57,20 +54,11 @@ public class TransfersStore extends CacheStoreAdapter<Long, Transfer> implements
 
     @Override
     public void stop() throws IgniteException {
+
     }
 
     @Override
-    public void loadCache(IgniteBiInClosure<Long, Transfer> clo, Object... args) {
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        Future f = executorService.submit(() -> {
-            List<Map<String, Object>> load = jdbc.queryForList("SELECT * FROM TRANSFERS", new HashMap());
-            load.forEach((map) -> {
-                long id = (Long) map.get("ID");
-                clo.apply(id, new Transfer(id, (Integer) map.get("FROMID"),
-                        (Integer) map.get("TOID"), (Integer) map.get("AMOUNT"), (Long) map.get("TS")));
-            });
-            executorService.shutdown();
-        });
-    }
+    public void delete(Object o) throws CacheWriterException {
 
+    }
 }

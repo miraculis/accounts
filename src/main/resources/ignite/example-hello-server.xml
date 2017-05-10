@@ -63,6 +63,24 @@
                         </bean>
                     </property>
                 </bean>
+
+                <bean class="org.apache.ignite.configuration.CacheConfiguration">
+                    <!-- Set a cache name. -->
+                    <property name="name" value="transfers-grouped-by-account"/>
+
+                    <!-- Set atomicity mode, can be ATOMIC or TRANSACTIONAL.
+                                         ATOMIC is default. -->
+                    <property name="atomicityMode" value="ATOMIC"/>
+                    <property name="readThrough" value="true"></property>
+                    <property name="writeThrough" value="true"></property>
+                    <!-- Set cacheStoreFactory-->
+                    <property name="cacheStoreFactory">
+                        <bean class="javax.cache.configuration.FactoryBuilder" factory-method="factoryOf">
+                            <constructor-arg value="accounts.dao.GrouppedTransfersStore"></constructor-arg>
+                        </bean>
+                    </property>
+                </bean>
+
             </list>
         </property>
     </bean>

@@ -1,4 +1,5 @@
 1. Install node.js, jdk1.8, maven
-2. clone accounts and accounts-gui
-3. cd accounts-gui, npm install, ng build -prod
-4.
+2. npm install -g @angular/cli
+3. cd ../accounts-gui; npm install; ng build -prod
+4. mvn package
+5. java -jar targets/accounts-0.1.0.jar

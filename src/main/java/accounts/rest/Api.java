@@ -3,6 +3,7 @@ package accounts.rest;
 import accounts.Account;
 import accounts.Bank;
 import accounts.Transfer;
+import accounts.Transfers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -30,9 +31,9 @@ public class Api {
     }
 
     @RequestMapping(value = "/api/accounts/{id}/transfers", method = RequestMethod.GET, produces = "application/json")
-    public TransfersResponse listTransfers(@PathVariable int id, HttpServletResponse  response) {
+    public Transfers listTransfers(@PathVariable int id, HttpServletResponse  response) {
         setHeaders(response);
-        return new TransfersResponse(bank.listTransfers(id));
+        return bank.listTransfers(id);
     }
 
     @RequestMapping(value = "/api/transfer", method = RequestMethod.POST, consumes = "application/json")
