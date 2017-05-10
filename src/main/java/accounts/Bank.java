@@ -39,6 +39,8 @@ public class Bank {
                 transfers.put(t.getId(), t);
                 t1.getTransfers().add(t);
                 t2.getTransfers().add(t);
+                transfersG.put(t.getFrom(), t1);
+                transfersG.put(t.getTo(), t2);
                 tx.commit();
                 return 0;
             } else {
